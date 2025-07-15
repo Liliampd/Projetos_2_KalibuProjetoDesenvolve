@@ -52,10 +52,29 @@
                 <li><a href="https://youtu.be/j0b7x3qtjMI?si=yAm78ApaIj6jsJyr">Como escolher a melhor interface de áudio para o seu estúdio.</a></li>
             </ul>
         </section>
+    <section class="comentarios">
+  <h2>Deixe seu comentário</h2>
+  <form id="form-comentario">
+    <label for="nome">Nome:</label><br />
+    <input type="text" id="nome" name="nome" required /><br /><br />
+
+    <label for="mensagem">Comentário:</label><br />
+    <textarea id="mensagem" name="mensagem" rows="4" required></textarea><br /><br />
+
+    <button type="submit">Enviar</button>
+  </form>
+
+  <div id="lista-comentarios">
+    <!-- Os comentários aparecerão aqui -->
+  </div>
+</section>
+
     </main>
 
     <footer>
         <p>&copy; 2025 Kalibu Áudio Lab | <a href="index.html"><strong>Início</strong></a></p>
     </footer>
+<script src="assets/js/comentarios.js"></script>
+
 </body>
 </html>
