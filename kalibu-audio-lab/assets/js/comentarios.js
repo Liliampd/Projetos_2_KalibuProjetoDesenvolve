@@ -1,9 +1,8 @@
-// Espera o DOM carregar
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("form-comentario");
     const lista = document.getElementById("lista-comentarios");
 
-    // Evento de envio do formulário
+    // Envia comentário para o servidor
     form.addEventListener("submit", function (e) {
         e.preventDefault();
 
@@ -15,14 +14,45 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Exibir o comentário na tela (simulação local)
-        const novoComentario = document.createElement("div");
-        novoComentario.innerHTML = `<strong>${nome}</strong>: ${mensagem} <br><hr>`;
-        lista.prepend(novoComentario);
-
-        // Limpar o formulário
-        form.reset();
-
-        // 👉 Aqui futuramente vamos enviar para o PHP/MySQL via fetch()
+        fetch("http://localhost:3000/comentarios", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ nome, mensagem }),
+        })
+            .then((res) => res.json())
+            .then((dados) => {
+                if (dados.status === "sucesso") {
+                    const novoComentario = document.createElement("div");
+                    novoComentario.innerHTML = `<strong>${nome}</strong>: ${mensagem} <br><hr>`;
+                    lista.prepend(novoComentario);
+                    form.reset();
+                } else {
+                    alert("Erro ao enviar comentário.");
+                }
+            })
+            .catch(() => {
+                alert("Erro de conexão com o servidor.");
+            });
     });
+
+    // Carrega os comentários salvos
+    function carregarComentarios() {
+        fetch("http://localhost:3000/comentarios")
+            .then((res) => res.json())
+            .then((dados) => {
+                lista.innerHTML = ""; // Limpa antes de adicionar
+                dados.forEach((comentario) => {
+                    const item = document.createElement("div");
+                    item.innerHTML = `<strong>${comentario.nome}</strong> (${comentario.data}): ${comentario.mensagem}<br><hr>`;
+                    lista.appendChild(item);
+                });
+            })
+            .catch(() => {
+                console.log("Erro ao carregar comentários.");
+            });
+    }
+
+    carregarComentarios(); // Carrega ao abrir a página
 });
