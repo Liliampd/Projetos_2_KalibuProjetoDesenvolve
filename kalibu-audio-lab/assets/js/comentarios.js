@@ -38,21 +38,45 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Carrega os comentários salvos
-    function carregarComentarios() {
-        fetch("http://localhost:3000/comentarios")
-            .then((res) => res.json())
-            .then((dados) => {
-                lista.innerHTML = ""; // Limpa antes de adicionar
-                dados.forEach((comentario) => {
-                    const item = document.createElement("div");
-                    item.innerHTML = `<strong>${comentario.nome}</strong> (${comentario.data}): ${comentario.mensagem}<br><hr>`;
-                    lista.appendChild(item);
-                });
-            })
-            .catch(() => {
-                console.log("Erro ao carregar comentários.");
+  function carregarComentarios() {
+    fetch("http://localhost:3000/comentarios")
+        .then((res) => res.json())
+        .then((dados) => {
+            lista.innerHTML = ""; // Limpa antes de adicionar
+
+            dados.forEach((comentario) => {
+                const item = document.createElement("div");
+                item.innerHTML = `
+                    <strong>${comentario.nome}</strong> (${comentario.data}): ${comentario.mensagem}
+                    <button onclick="deletarComentario(${comentario.id})" style="margin-left:10px; color: red;">Excluir</button>
+                    <hr>
+                `;
+                lista.appendChild(item);
             });
-    }
+        })
+        .catch(() => {
+            console.log("Erro ao carregar comentários.");
+        });
+}
+
 
     carregarComentarios(); // Carrega ao abrir a página
 });
+function deletarComentario(id) {
+    if (confirm("Tem certeza que deseja excluir este comentário?")) {
+        fetch(`http://localhost:3000/comentarios/${id}`, {
+            method: "DELETE",
+        })
+            .then((res) => res.json())
+            .then((dados) => {
+                if (dados.status === "sucesso") {
+                    carregarComentarios(); // Atualiza após deletar
+                } else {
+                    alert("Erro ao excluir comentário.");
+                }
+            })
+            .catch(() => {
+                alert("Erro ao se comunicar com o servidor.");
+            });
+    }
+}

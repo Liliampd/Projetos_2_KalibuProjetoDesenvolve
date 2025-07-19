@@ -12,7 +12,7 @@ app.use(express.json());
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "810502", // Coloque a senha se você tiver uma
+  password: "810502", 
   database: "kalibu_lab",
 });
 
@@ -46,6 +46,22 @@ app.get("/comentarios", (req, res) => {
     }
     res.json(results);
   });
+  
+  // Rota DELETE para deletar um comentário pelo id
+app.delete("/comentarios/:id", (req, res) => {
+    const id = req.params.id;
+
+    const sql = "DELETE FROM comentarios WHERE id = ?";
+    db.query(sql, [id], (err, resultado) => {
+        if (err) {
+            console.error("Erro ao deletar comentário:", err);
+            res.status(500).json({ status: "erro" });
+        } else {
+            res.json({ status: "sucesso" });
+        }
+    });
+});
+
 });
 
 app.listen(port, () => {
