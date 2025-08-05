@@ -25,7 +25,19 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((dados) => {
                 if (dados.status === "sucesso") {
                     const novoComentario = document.createElement("div");
-                    novoComentario.innerHTML = `<strong>${nome}</strong>: ${mensagem} <br><hr>`;
+
+                    const dataAtual = new Date();
+                    const dataFormatada = `${dataAtual.getDate().toString().padStart(2, "0")}/${
+                        (dataAtual.getMonth() + 1).toString().padStart(2, "0")
+                    }/${dataAtual.getFullYear()} ${dataAtual.getHours().toString().padStart(2, "0")}:${
+                        dataAtual.getMinutes().toString().padStart(2, "0")
+                    }`;
+
+                    novoComentario.innerHTML = `
+                        <strong>${nome}</strong> (${dataFormatada}): ${mensagem}
+                        <button onclick="this.parentElement.remove()" style="margin-left:10px; color: red;">Excluir</button>
+                        <hr>
+                    `;
                     lista.prepend(novoComentario);
                     form.reset();
                 } else {
@@ -37,31 +49,32 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     });
 
-    // Carrega os comentários salvos
-  function carregarComentarios() {
-    fetch("http://localhost:3000/comentarios")
-        .then((res) => res.json())
-        .then((dados) => {
-            lista.innerHTML = ""; // Limpa antes de adicionar
+    // Carrega os comentários salvos do banco
+    function carregarComentarios() {
+        fetch("http://localhost:3000/comentarios")
+            .then((res) => res.json())
+            .then((dados) => {
+                lista.innerHTML = "";
 
-            dados.forEach((comentario) => {
-                const item = document.createElement("div");
-                item.innerHTML = `
-                    <strong>${comentario.nome}</strong> (${comentario.data}): ${comentario.mensagem}
-                    <button onclick="deletarComentario(${comentario.id})" style="margin-left:10px; color: red;">Excluir</button>
-                    <hr>
-                `;
-                lista.appendChild(item);
+                dados.forEach((comentario) => {
+                    const item = document.createElement("div");
+                    item.innerHTML = `
+                        <strong>${comentario.nome}</strong> (${comentario.data}): ${comentario.mensagem}
+                        <button onclick="deletarComentario(${comentario.id})" style="margin-left:10px; color: red;">Excluir</button>
+                        <hr>
+                    `;
+                    lista.appendChild(item);
+                });
+            })
+            .catch(() => {
+                console.log("Erro ao carregar comentários.");
             });
-        })
-        .catch(() => {
-            console.log("Erro ao carregar comentários.");
-        });
-}
-
+    }
 
     carregarComentarios(); // Carrega ao abrir a página
 });
+
+// Função global para deletar comentário do banco
 function deletarComentario(id) {
     if (confirm("Tem certeza que deseja excluir este comentário?")) {
         fetch(`http://localhost:3000/comentarios/${id}`, {
@@ -70,7 +83,9 @@ function deletarComentario(id) {
             .then((res) => res.json())
             .then((dados) => {
                 if (dados.status === "sucesso") {
-                    carregarComentarios(); // Atualiza após deletar
+                    // Recarrega a lista após deletar
+                    document.querySelector("#lista-comentarios").innerHTML = "";
+                    carregarComentarios();
                 } else {
                     alert("Erro ao excluir comentário.");
                 }
