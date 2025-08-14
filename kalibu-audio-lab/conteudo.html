@@ -29,7 +29,7 @@
         <section class="guias">
             <h2>Guias de Produção Musical</h2>
             <ul>
-                <li><a href="https://youtu.be/2EkvOMlewhs?si=5_GdNqP_WVK5x3Nw">Entenda o que é DAWs .</a></li>
+                <li><a href="https://youtu.be/2EkvOMlewhs?si=5_GdNqP_WVK5x3Nw">Entenda o que é DAWs.</a></li>
                 <li><a href="https://youtu.be/fG_bdU-gJGM?si=aBVkMJh61htbhD9B">Ferramentas de áudio.</a></li>
                 <li><a href="https://youtu.be/H_yZyEdymfA?si=jD13mtiZ7uzyaMSW">Produção musical.</a></li>
             </ul>
@@ -38,7 +38,7 @@
         <section class="miditutorials">
             <h2>Tutoriais sobre MIDI</h2>
             <ul>
-                <li><a href="https://youtu.be/WQKCxIq6pps?si=X_28e10rr5ATUO_2">Entenda o que é MIDI .</a></li>
+                <li><a href="https://youtu.be/WQKCxIq6pps?si=X_28e10rr5ATUO_2">Entenda o que é MIDI.</a></li>
                 <li><a href="https://youtu.be/lhsCZZJGDMU?si=mxD_72GfFvHHn-iY">Técnicas de produção usando controladores MIDI.</a></li>
                 <li><a href="https://youtu.be/u-CnWIYJT6A?si=DgSd0CdxQncY-tNO">Como integrar MIDI com VSTs e instrumentos virtuais.</a></li>
             </ul>
@@ -52,29 +52,74 @@
                 <li><a href="https://youtu.be/j0b7x3qtjMI?si=yAm78ApaIj6jsJyr">Como escolher a melhor interface de áudio para o seu estúdio.</a></li>
             </ul>
         </section>
-    <section class="comentarios">
-  <h2>Deixe seu comentário</h2>
-  <form id="form-comentario">
-    <label for="nome">Nome:</label><br />
-    <input type="text" id="nome" name="nome" required /><br /><br />
 
-    <label for="mensagem">Comentário:</label><br />
-    <textarea id="mensagem" name="mensagem" rows="4" required></textarea><br /><br />
+        <section class="comentarios">
+            <h2>Deixe seu comentário</h2>
+            <form id="form-comentario">
+                <label for="nome">Nome:</label><br />
+                <input type="text" id="nome" name="nome" required /><br /><br />
 
-    <button type="submit">Enviar</button>
-  </form>
+                <label for="mensagem">Comentário:</label><br />
+                <textarea id="mensagem" name="mensagem" rows="4" required></textarea><br /><br />
 
-  <div id="lista-comentarios">
-    <!-- Os comentários aparecerão aqui -->
-  </div>
-</section>
+                <button type="submit">Enviar</button>
+            </form>
 
+            <div id="lista-comentarios">
+                <!-- Comentários carregados aqui -->
+            </div>
+        </section>
     </main>
 
     <footer>
         <p>&copy; 2025 Kalibu Áudio Lab | <a href="index.html"><strong>Início</strong></a></p>
     </footer>
-<script src="assets/js/comentarios.js"></script>
 
+    <script>
+        const API_URL = "http://localhost:3000";
+
+        // Função para carregar comentários
+        async function carregarComentarios() {
+            try {
+                const resposta = await fetch(`${API_URL}/comentarios`);
+                const comentarios = await resposta.json();
+
+                const lista = document.getElementById("lista-comentarios");
+                lista.innerHTML = "";
+
+                comentarios.forEach(c => {
+                    const div = document.createElement("div");
+                    div.innerHTML = `<strong>${c.nome}</strong> (${new Date(c.data_envio).toLocaleString()}): ${c.mensagem}`;
+                    lista.appendChild(div);
+                });
+            } catch (error) {
+                console.error("Erro ao carregar comentários:", error);
+            }
+        }
+
+        // Enviar comentário
+        document.getElementById("form-comentario").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const nome = document.getElementById("nome").value;
+            const mensagem = document.getElementById("mensagem").value;
+
+            try {
+                await fetch(`${API_URL}/comentarios`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nome, mensagem })
+                });
+
+                document.getElementById("form-comentario").reset();
+                carregarComentarios();
+            } catch (error) {
+                console.error("Erro ao enviar comentário:", error);
+            }
+        });
+
+        // Carregar comentários ao abrir a página
+        carregarComentarios();
+    </script>
 </body>
 </html>

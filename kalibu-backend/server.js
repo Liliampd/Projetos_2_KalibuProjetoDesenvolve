@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 const db = mysql.createConnection({
     host: "localhost",
     user: "root", // seu usuário MySQL
-    password: "", // sua senha MySQL
+    password: "810502", // sua senha MySQL
     database: "kalibu_lab"
 });
 
