@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cadastro - Kalibu Áudio Lab</title>
+  <title>Entrar - Kalibu Áudio Lab</title>
   <link rel="stylesheet" href="assets/css/style.css"/>
   <style>
     .container-form{max-width:520px;margin:2rem auto;padding:1.5rem;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.08);background:#fff}
@@ -29,8 +29,8 @@
           <li><a href="conteudo.html">Conteúdo</a></li>
 
           <!-- links de autenticação -->
-          <li><a href="cadastro.html" id="link-cadastro" class="active">Cadastro</a></li>
-          <li><a href="login.html" id="link-entrar">Entrar</a></li>
+          <li><a href="cadastro.html" id="link-cadastro">Cadastro</a></li>
+          <li><a href="login.html" id="link-entrar" class="active">Entrar</a></li>
           <li>
             <button id="btn-sair" style="display:none;background:none;border:none;color:#fff;cursor:pointer;padding:0;">Sair</button>
           </li>
@@ -40,12 +40,8 @@
   </header>
 
   <main class="container-form">
-    <h1>Cadastro de Usuário</h1>
-    <form id="form-cadastro">
-      <div class="grupo">
-        <label for="nome">Nome completo</label>
-        <input type="text" id="nome" required />
-      </div>
+    <h1>Entrar</h1>
+    <form id="form-login">
       <div class="grupo">
         <label for="email">E-mail</label>
         <input type="email" id="email" required />
@@ -55,8 +51,8 @@
         <input type="password" id="senha" required minlength="6" />
       </div>
       <div class="acoes">
-        <button type="submit" class="btn btn-primaria">Cadastrar</button>
-        <button type="reset" class="btn btn-secundaria">Limpar</button>
+        <button type="submit" class="btn btn-primaria">Entrar</button>
+        <a class="btn btn-secundaria" href="cadastro.html">Ir para Cadastro</a>
       </div>
       <div id="mensagem" class="msg" aria-live="polite"></div>
     </form>
@@ -91,34 +87,33 @@
     document.getElementById('btn-sair')?.addEventListener('click', sair);
     atualizarMenuAuth();
 
-    // Cadastro
-    const form = document.getElementById('form-cadastro');
+    // Login
+    const form = document.getElementById('form-login');
     const msg = document.getElementById('mensagem');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      msg.textContent = 'Enviando...'; msg.className = 'msg';
+      msg.textContent = 'Entrando...'; msg.className = 'msg';
 
-      const nome = document.getElementById('nome').value.trim();
       const email = document.getElementById('email').value.trim();
       const senha = document.getElementById('senha').value;
 
       try {
-        const resp = await fetch(`${API}/auth/registrar`, {
+        const resp = await fetch(`${API}/auth/entrar`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ nome_completo: nome, email, senha })
+          body: JSON.stringify({ email, senha })
         });
         const data = await resp.json();
 
         if (resp.ok && data.ok) {
           if (data.token) localStorage.setItem('kalibu_token', data.token);
-          msg.textContent = 'Cadastro realizado com sucesso! ✅';
+          msg.textContent = 'Login realizado com sucesso! ✅';
           msg.className = 'msg ok';
           setTimeout(() => window.location.href = 'conteudo.html', 700);
         } else {
-          msg.textContent = data.mensagem || 'Erro ao cadastrar.';
+          msg.textContent = data.mensagem || 'Erro ao entrar.';
           msg.className = 'msg erro';
         }
       } catch {
