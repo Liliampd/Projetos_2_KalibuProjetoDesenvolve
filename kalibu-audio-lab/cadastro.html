@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cadastro de Usuário - Kalibu Áudio Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <style>
+    /* reforço leve para o formulário (mantém seu tema) */
+    .container-form {
+      max-width: 520px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.08);
+      background: #fff;
+    }
+    .container-form h1 { margin-bottom: 1rem; }
+    .grupo { margin-bottom: .9rem; }
+    .grupo label { display:block; margin-bottom: .3rem; font-weight: 600; }
+    .grupo input {
+      width: 100%; padding: .7rem .8rem; border-radius: 10px;
+      border: 1px solid #ddd; outline: none;
+    }
+    .acoes { margin-top: 1rem; display: flex; gap: .6rem; }
+    .btn { cursor: pointer; padding: .7rem 1rem; border-radius: 10px; border: none; }
+    .btn-primaria { background: #222; color: #fff; }
+    .btn-secundaria { background: #f1f1f1; }
+    .msg { margin-top: 1rem; font-weight: 600; }
+    .msg.ok { color: #0a7d2f; }
+    .msg.erro { color: #a81010; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <ul class="menu">
+          <li><a href="index.html">Início</a></li>
+          <li><a href="sobre.html">Sobre</a></li>
+          <li><a href="conteudo.html">Conteúdo</a></li>
+          <li><a href="cadastro.html" class="button">Cadastro</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container-form">
+    <h1>Cadastro de Usuário</h1>
+
+    <form id="form-cadastro">
+      <div class="grupo">
+        <label for="nome">Nome completo</label>
+        <input type="text" id="nome" name="nome" required />
+      </div>
+
+      <div class="grupo">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" required />
+      </div>
+
+      <div class="grupo">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" required minlength="6" />
+      </div>
+
+      <div class="acoes">
+        <button type="submit" class="btn btn-primaria">Cadastrar</button>
+        <button type="reset" class="btn btn-secundaria">Limpar</button>
+      </div>
+
+      <div id="mensagem" class="msg" aria-live="polite"></div>
+    </form>
+  </main>
+
+  <script>
+    const API = 'http://localhost:4000';
+
+    const form = document.getElementById('form-cadastro');
+    const msg = document.getElementById('mensagem');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.textContent = 'Enviando...';
+      msg.className = 'msg';
+
+      const nome = document.getElementById('nome').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const senha = document.getElementById('senha').value;
+
+      try {
+        const resp = await fetch(`${API}/auth/registrar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',            // envia/recebe cookie do login
+          body: JSON.stringify({
+            nome_completo: nome,
+            email: email,
+            senha: senha
+          })
+        });
+
+        const data = await resp.json();
+
+        if (resp.ok && data.ok) {
+          msg.textContent = 'Cadastro realizado com sucesso! ✅';
+          msg.className = 'msg ok';
+          form.reset();
+        } else {
+          msg.textContent = data.mensagem || 'Erro ao cadastrar.';
+          msg.className = 'msg erro';
+        }
+      } catch (err) {
+        msg.textContent = 'Falha de conexão com o servidor.';
+        msg.className = 'msg erro';
+      }
+    });
+  </script>
+</body>
+</html>
