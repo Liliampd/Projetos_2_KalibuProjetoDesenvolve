@@ -10,12 +10,23 @@
     .grupo{margin-bottom:.9rem}
     .grupo label{display:block;margin-bottom:.3rem;font-weight:600}
     .grupo input{width:100%;padding:.7rem .8rem;border-radius:10px;border:1px solid #ddd;outline:none}
+
+    /* Olhinho dentro do input */
+    .input-wrap{position:relative}
+    .toggle-olho{
+      position:absolute; right:10px; top:50%; transform:translateY(-50%);
+      background:none; border:none; cursor:pointer; font-size:1rem; color:#555; padding:.1rem .25rem;
+    }
+    .toggle-olho:focus{outline:2px solid #8aa; outline-offset:2px}
+
     .acoes{margin-top:1rem;display:flex;gap:.6rem}
     .btn{cursor:pointer;padding:.7rem 1rem;border-radius:10px;border:none}
     .btn-primaria{background:#222;color:#fff}
     .btn-secundaria{background:#f1f1f1}
+
     .msg{margin-top:1rem;font-weight:600}
-    .msg.ok{color:#0a7d2f}.msg.erro{color:#a81010}
+    .msg.ok{color:#0a7d2f}
+    .msg.erro{color:#a81010}
   </style>
 </head>
 <body>
@@ -41,19 +52,25 @@
 
   <main class="container-form">
     <h1>Entrar</h1>
-    <form id="form-login">
+    <form id="form-login" novalidate>
       <div class="grupo">
         <label for="email">E-mail</label>
         <input type="email" id="email" required />
       </div>
+
       <div class="grupo">
         <label for="senha">Senha</label>
-        <input type="password" id="senha" required minlength="6" />
+        <div class="input-wrap">
+          <input type="password" id="senha" required minlength="6" />
+          <button type="button" id="olho-senha" class="toggle-olho" title="Mostrar senha" aria-pressed="false">👁</button>
+        </div>
       </div>
+
       <div class="acoes">
         <button type="submit" class="btn btn-primaria">Entrar</button>
         <a class="btn btn-secundaria" href="cadastro.html">Ir para Cadastro</a>
       </div>
+
       <div id="mensagem" class="msg" aria-live="polite"></div>
     </form>
   </main>
@@ -61,7 +78,7 @@
   <script>
     const API = 'http://localhost:4000';
 
-    // Menu: Entrar/Cadastro/Sair
+    // ===== Menu: Entrar/Cadastro/Sair =====
     function atualizarMenuAuth() {
       const token = localStorage.getItem('kalibu_token');
       const temToken = !!token;
@@ -87,16 +104,36 @@
     document.getElementById('btn-sair')?.addEventListener('click', sair);
     atualizarMenuAuth();
 
-    // Login
+    // ===== Olhinho da senha =====
+    const senhaInput = document.getElementById('senha');
+    const olhoBtn    = document.getElementById('olho-senha');
+    olhoBtn.addEventListener('click', () => {
+      const visivel = senhaInput.type === 'text';
+      senhaInput.type = visivel ? 'password' : 'text';
+      olhoBtn.setAttribute('aria-pressed', String(!visivel));
+      olhoBtn.title = visivel ? 'Mostrar senha' : 'Ocultar senha';
+      olhoBtn.textContent = visivel ? '👁' : '🙈';
+    });
+
+    // ===== Login =====
     const form = document.getElementById('form-login');
-    const msg = document.getElementById('mensagem');
+    const msg  = document.getElementById('mensagem');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      msg.textContent = 'Entrando...'; msg.className = 'msg';
+      msg.textContent = '';
+      msg.className = 'msg';
 
       const email = document.getElementById('email').value.trim();
-      const senha = document.getElementById('senha').value;
+      const senha = senhaInput.value;
+
+      if (!email || !senha) {
+        msg.textContent = 'Preencha e-mail e senha.';
+        msg.className = 'msg erro';
+        return;
+      }
+
+      msg.textContent = 'Entrando...';
 
       try {
         const resp = await fetch(`${API}/auth/entrar`, {
@@ -111,9 +148,9 @@
           if (data.token) localStorage.setItem('kalibu_token', data.token);
           msg.textContent = 'Login realizado com sucesso! ✅';
           msg.className = 'msg ok';
-          setTimeout(() => window.location.href = 'conteudo.html', 700);
+          setTimeout(() => window.location.href = 'conteudo.html', 600);
         } else {
-          msg.textContent = data.mensagem || 'Erro ao entrar.';
+          msg.textContent = data.mensagem || 'E-mail ou senha inválidos.';
           msg.className = 'msg erro';
         }
       } catch {
