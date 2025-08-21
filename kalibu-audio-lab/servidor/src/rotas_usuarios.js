@@ -1,17 +1,10 @@
-// src/rotas_usuarios.js
 const express = require('express');
+const { registrar, entrar, perfil } = require('./controladores/auth.controller');
+const auth = require('./auth');
+
 const router = express.Router();
-
-const ctrl = require('./controladores/usuario.controller');
-const { exigirAuth } = require('./auth');
-
-// (debug opcional) descomente pra ver o que está vindo
-// console.log('usuario.controller exporta:', Object.keys(ctrl));
-// console.log('exigirAuth type:', typeof exigirAuth);
-
-router.post('/registrar', ctrl.registrar);           // POST /auth/registrar
-router.post('/entrar',    ctrl.entrar);              // POST /auth/entrar
-router.get('/perfil',     exigirAuth, ctrl.perfil);  // GET  /auth/perfil
-router.post('/sair',      ctrl.sair);                // POST /auth/sair
+router.post('/registrar', registrar);
+router.post('/entrar', entrar);
+router.get('/perfil', auth, perfil);
 
 module.exports = router;
