@@ -1,23 +1,35 @@
-// servidor/src/banco.js
 const mysql = require('mysql2/promise');
-require('dotenv').config();
+const dotenv = require('dotenv');
+
+// carrega variáveis do .env
+dotenv.config();
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
-  port: Number(process.env.DB_PORT || 3306),
+  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || process.env.MYSQL_DATABASE || 'kalibu_lab',
+  database: process.env.DB_NAME || 'kalibu_lab',
   waitForConnections: true,
   connectionLimit: 10,
-  namedPlaceholders: true,
+  queueLimit: 0
 });
 
-// debug útil durante os testes
-if (process.env.NODE_ENV === 'test') {
-  pool.query('SELECT DATABASE() AS db')
-      .then(([r]) => console.log('Conectado ao DB:', r[0].db))
-      .catch(console.error);
-}
+// log simpático da conexão (sem travar a app se falhar)
+(async () => {
+  try {
+    const [rows] = await pool.query('SELECT DATABASE() AS db');
+    console.log('Conectado ao DB:', rows?.[0]?.db || '(desconhecido)');
+  } catch (err) {
+    console.error('Erro ao conectar no DB:', err.message);
+  }
+})();
+
+// método para o Jest encerrar a pool
+pool.fechar = async () => {
+  try {
+    await pool.end();
+  } catch (_) {}
+};
 
 module.exports = pool;
