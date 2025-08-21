@@ -7,3 +7,7 @@ cd kalibu-audio-lab/servidor
 npm i
 npm run dev
 
+# Como rodar 
+cd kalibu-audio-lab/servidor
+npm test
+
