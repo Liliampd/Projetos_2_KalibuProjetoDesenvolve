@@ -106,6 +106,29 @@ footer a {
 footer a:hover {
     text-decoration: underline;
 }
+/* Testes_models_controllers*/
+/*  Ajustes da área de comentários */
+
+/* 1) textarea não passar da borda */
+#form-comentario textarea{
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;   /* inclui padding/borda no cálculo da largura */
+  resize: vertical;         /* opcional: permite aumentar só na vertical */
+}
+
+/* 2) Quebrar linhas de comentários muito longos */
+#lista-comentarios li{
+  word-break: break-word;    /* quebra palavras gigantes */
+  overflow-wrap: anywhere;   /* quebra em qualquer ponto se precisar */
+}
+
+#lista-comentarios p{
+  margin: .5rem 0 0 0;
+  white-space: pre-wrap;     /* preserva quebras de linha do usuário */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+
 .comentarios {
     background-color: #ffffff;
     margin-top: 2rem;
@@ -139,4 +162,5 @@ footer a:hover {
 
 .comentarios button:hover {
     background-color: #505050;
+ main
 }
