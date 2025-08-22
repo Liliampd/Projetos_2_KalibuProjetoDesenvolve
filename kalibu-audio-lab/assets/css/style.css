@@ -106,7 +106,8 @@ footer a {
 footer a:hover {
     text-decoration: underline;
 }
-/* ===== Ajustes da área de comentários ===== */
+/* Testes_models_controllers*/
+/*  Ajustes da área de comentários */
 
 /* 1) textarea não passar da borda */
 #form-comentario textarea{
@@ -127,4 +128,39 @@ footer a:hover {
   white-space: pre-wrap;     /* preserva quebras de linha do usuário */
   word-break: break-word;
   overflow-wrap: anywhere;
+
+.comentarios {
+    background-color: #ffffff;
+    margin-top: 2rem;
+    padding: 2rem;
+    border-radius: 10px;
+    color: #000000;
+}
+
+.comentarios h2 {
+    margin-bottom: 1rem;
+}
+
+.comentarios input,
+.comentarios textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+.comentarios button {
+    padding: 0.5rem 1rem;
+    background-color: #000000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.comentarios button:hover {
+    background-color: #505050;
+ main
 }
