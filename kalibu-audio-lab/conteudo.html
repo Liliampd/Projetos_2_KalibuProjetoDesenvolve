@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
-/*Testes_models_controllers*/
   <header>
     <div class="container">
       <img src="assets/images/Logo principal k.png" alt="Logo Kalibu Áudio Lab" class="logo" />
@@ -16,12 +15,9 @@
           <li><a href="index.html">Início</a></li>
           <li><a href="sobre.html">Sobre</a></li>
           <li><a href="conteudo.html" class="active">Conteúdo</a></li>
-
-          <!-- links de autenticação -->
           <li><a href="cadastro.html" id="link-cadastro">Cadastro</a></li>
           <li><a href="login.html" id="link-entrar">Entrar</a></li>
           <li>
-            <!-- botão Sair estilizado como link; começa escondido -->
             <button id="btn-sair" style="display:none;background:none;border:none;color:#fff;cursor:pointer;padding:0;">
               Sair
             </button>
@@ -50,7 +46,7 @@
       <h2>Tutoriais sobre MIDI</h2>
       <ul>
         <li><a href="https://youtu.be/WQKCxIq6pps?si=X_28e10rr5ATUO_2">Entenda o que é MIDI.</a></li>
-        <li><a href="https://youtu.be/lhsCZZJGDMU?si=mxD_72GfFvHHn-iY">Técnicas de produção usando controladores MIDI.</a></li>
+        <li><a href="https://youtu.be/lhsCZZJGDMU?si=mxD_72GfFvHHn-iY">Técnicas de produção com controladores MIDI.</a></li>
         <li><a href="https://youtu.be/u-CnWIYJT6A?si=DgSd0CdxQncY-tNO">Como integrar MIDI com VSTs e instrumentos virtuais.</a></li>
       </ul>
     </section>
@@ -59,46 +55,52 @@
       <h2>Destaques em Tecnologia Musical</h2>
       <ul>
         <li><a href="https://youtu.be/fG_bdU-gJGM?si=aBVkMJh61htbhD9B">Novos plugins e softwares para produtores independentes.</a></li>
-        <li><a href="https://www.youtube.com/live/HcQtCgvGFyc?si=2kGXpsLNmlSc4xRl">Análise de tendências no universo musical digital.</a></li>
+        <li><a href="https://www.youtube.com/live/HcQtCgvGFyc?si=2kGXpsLNmlSc4xRl">Tendências no universo musical digital.</a></li>
         <li><a href="https://youtu.be/j0b7x3qtjMI?si=yAm78ApaIj6jsJyr">Como escolher a melhor interface de áudio.</a></li>
       </ul>
     </section>
 
-    <!-- ====== INÍCIO: BLOCO DE COMENTÁRIOS ====== -->
+    <!-- ====== Comentários ====== -->
     <section class="container" style="max-width: 820px; margin: 2rem auto;">
       <h2>Comentários</h2>
 
       <!-- Aviso quando não estiver logado -->
-      <div id="aviso-login" style="display:none; margin:.8rem 0; padding:.8rem; background:#fff3cd; border:1px solid #ffe69c; border-radius:10px;">
+      <div id="aviso-login"
+           style="display:none;margin:.8rem 0;padding:.8rem;background:#fff3cd;border:1px solid #ffe69c;border-radius:10px;">
         Você precisa estar logado para comentar.
         <a href="cadastro.html" class="button" style="margin-left:.4rem;">Cadastrar</a>
         <a href="login.html" class="button" style="margin-left:.4rem;">Entrar</a>
       </div>
 
-      <!-- Formulário só aparece se estiver logado -->
+      <!-- Formulário quando logado -->
       <div id="area-form" style="display:none;">
+        <p style="margin:.2rem 0 .6rem 0;">Bem-vindo(a), <strong id="boas-vindas">usuário</strong>!</p>
         <p style="margin:.2rem 0 .6rem 0;">Logado como: <strong id="nome-usuario"></strong></p>
-        <form id="form-comentario" class="container-form" style="background:#fff; padding:1rem; border-radius:12px; box-shadow:0 6px 20px rgba(0,0,0,.05);">
+
+        <form id="form-comentario" class="container-form"
+              style="background:#fff;padding:1rem;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.05);">
           <div class="grupo" style="margin-bottom:.8rem;">
             <label for="texto">Escreva um comentário</label>
-            <textarea id="texto" rows="3" style="width:100%; padding:.7rem; border-radius:10px; border:1px solid #ddd;"></textarea>
+            <textarea id="texto" rows="3"
+                      style="width:100%;padding:.7rem;border-radius:10px;border:1px solid #ddd;"></textarea>
           </div>
-          <button class="btn btn-primaria" type="submit" style="padding:.6rem 1rem; border:none; border-radius:10px; background:#222; color:#fff;">Publicar</button>
+          <button class="btn btn-primaria" type="submit"
+                  style="padding:.6rem 1rem;border:none;border-radius:10px;background:#222;color:#fff;">
+            Publicar
+          </button>
           <span id="msg-coment" class="msg" style="margin-left:.6rem;"></span>
         </form>
       </div>
 
       <!-- Lista de comentários -->
-      <ul id="lista-comentarios" style="list-style:none; padding:0; margin-top:1.2rem;"></ul>
+      <ul id="lista-comentarios" style="list-style:none;padding:0;margin-top:1.2rem;"></ul>
     </section>
-    <!-- ====== FIM: BLOCO DE COMENTÁRIOS ====== -->
   </main>
 
   <footer>
     <p>&copy; 2025 Kalibu Áudio Lab | <a href="index.html"><strong>Início</strong></a></p>
   </footer>
 
-  <!-- ====== SCRIPT ÚNICO ====== -->
   <script>
     // ===== Config =====
     const API = 'http://localhost:4000';
@@ -106,36 +108,59 @@
     let token = localStorage.getItem('kalibu_token');
     let usuarioLogado = null;
 
-    // ===== Menu: Entrar/Cadastrar/Sair =====
-    function atualizarMenuAuth() {
-      token = localStorage.getItem('kalibu_token'); // atualiza
-      const temToken = !!token;
-      const btnSair = document.getElementById('btn-sair');
-      const linkEntrar = document.getElementById('link-entrar');
-      const linkCadastro = document.getElementById('link-cadastro');
+    // Util: melhor nome para exibir
+    function primeiroNome(u) {
+      if (!u) return 'usuário';
+      if (u.nome && u.nome.trim()) return u.nome.trim().split(' ')[0];
+      if (u.nome_completo && u.nome_completo.trim()) return u.nome_completo.trim().split(' ')[0];
+      if (u.email) return (u.email.split('@')[0] || 'usuário');
+      return 'usuário';
+    }
 
-      if (temToken) {
-        if (btnSair) btnSair.style.display = 'inline-block';
-        if (linkEntrar) linkEntrar.style.display = 'none';
-        if (linkCadastro) linkCadastro.style.display = 'none';
-      } else {
-        if (btnSair) btnSair.style.display = 'none';
-        if (linkEntrar) linkEntrar.style.display = 'inline-block';
-        if (linkCadastro) linkCadastro.style.display = 'inline-block';
+    // Nome do autor a partir do objeto de comentário
+    function nomeDoComentario(c) {
+      const candidatos = [
+        c.autor, c.nome, c.nome_autor, c.autor_nome, c.usuario_nome, c.user_nome,
+        c.author, c.display_name
+      ];
+      for (const n of candidatos) {
+        if (typeof n === 'string' && n.trim()) return n.trim();
       }
+      // tenta a partir de e-mail, se existir
+      if (typeof c.autor_email === 'string' && c.autor_email.includes('@')) {
+        return c.autor_email.split('@')[0];
+      }
+      if (typeof c.email === 'string' && c.email.includes('@')) {
+        return c.email.split('@')[0];
+      }
+      // se o comentário é do usuário atual e o backend não mandou nome
+      if (usuarioLogado && Number(c.autor_id) === Number(usuarioLogado.id)) {
+        return primeiroNome(usuarioLogado);
+      }
+      return 'Anônimo';
+    }
+
+    // Menu de autenticação (Cadastro sempre visível)
+    function atualizarMenuAuth() {
+      token = localStorage.getItem('kalibu_token');
+      const btnSair    = document.getElementById('btn-sair');
+      const linkEntrar = document.getElementById('link-entrar');
+      const logado = !!token;
+      if (btnSair)    btnSair.style.display    = logado ? 'inline-block' : 'none';
+      if (linkEntrar) linkEntrar.style.display = logado ? 'none'        : 'inline-block';
     }
 
     async function sair() {
       try {
         await fetch(`${API}/auth/sair`, { method: 'POST', credentials: 'include' });
-      } catch (e) { /* mesmo se falhar, limpamos o token local */ }
+      } catch {}
       localStorage.removeItem('kalibu_token');
       atualizarMenuAuth();
       location.reload();
     }
     document.getElementById('btn-sair')?.addEventListener('click', sair);
 
-    // ===== Utilitários de auth/comentários =====
+    // Perfil
     async function obterPerfil() {
       if (!token) return null;
       try {
@@ -144,61 +169,74 @@
           headers: { 'Authorization': 'Bearer ' + token }
         });
         const data = await resp.json();
-        return (resp.ok && data.ok) ? data.usuario : null;
-      } catch { return null; }
+        if (resp.ok && data.ok) {
+          const u = data.usuario || data.user || {};
+          return {
+            id:    u.id ?? u.user_id ?? u.usuario_id ?? null,
+            nome:  u.nome ?? u.nome_completo ?? null,
+            email: u.email ?? null
+          };
+        }
+      } catch {}
+      return null;
     }
 
-    function mostrarForm(ativo, nome='') {
+    function mostrarForm(ativo, nomeExibir = '') {
       const areaForm = document.getElementById('area-form');
-      const aviso = document.getElementById('aviso-login');
-      const nomeSpan = document.getElementById('nome-usuario');
+      const aviso    = document.getElementById('aviso-login');
+      const spanNome = document.getElementById('nome-usuario');
+      const boas     = document.getElementById('boas-vindas');
+
       if (ativo) {
         areaForm.style.display = 'block';
-        aviso.style.display = 'none';
-        nomeSpan.textContent = nome;
+        aviso.style.display    = 'none';
+        spanNome.textContent   = nomeExibir || 'usuário';
+        boas.textContent       = nomeExibir || 'usuário';
       } else {
         areaForm.style.display = 'none';
-        aviso.style.display = 'block';
+        aviso.style.display    = 'block';
       }
     }
 
+    // Render
     function criaItemComentario(c) {
       const li = document.createElement('li');
       li.style.marginBottom = '12px';
-      li.style.background = '#fff';
-      li.style.border = '1px solid #eee';
+      li.style.background   = '#fff';
+      li.style.border       = '1px solid #eee';
       li.style.borderRadius = '12px';
-      li.style.padding = '12px';
+      li.style.padding      = '12px';
 
       const topo = document.createElement('div');
-      topo.style.display = 'flex';
-      topo.style.justifyContent = 'space-between';
-      topo.style.gap = '8px';
+      topo.style.display         = 'flex';
+      topo.style.justifyContent  = 'space-between';
+      topo.style.gap             = '8px';
 
       const autor = document.createElement('strong');
-      autor.textContent = c.autor + ' • ' + new Date(c.criado_em).toLocaleString('pt-BR');
+      const nomeAutor = nomeDoComentario(c);
+      const dataFmt = c.criado_em ? new Date(c.criado_em).toLocaleString('pt-BR') : '';
+      autor.textContent = `${nomeAutor}${dataFmt ? ' • ' + dataFmt : ''}`;
 
       const acoes = document.createElement('div');
       acoes.style.display = 'flex';
-      acoes.style.gap = '6px';
+      acoes.style.gap     = '6px';
 
-      // Botões só para o dono
       if (usuarioLogado && Number(c.autor_id) === Number(usuarioLogado.id)) {
         const btEditar = document.createElement('button');
         btEditar.textContent = 'Editar';
-        btEditar.className = 'btn';
-        btEditar.style.padding = '.35rem .6rem';
+        btEditar.className   = 'btn';
+        btEditar.style.padding      = '.35rem .6rem';
         btEditar.style.borderRadius = '8px';
-        btEditar.style.border = '1px solid #ddd';
-        btEditar.onclick = () => editarComentario(c.id, c.texto);
+        btEditar.style.border       = '1px solid #ddd';
+        btEditar.onclick            = () => editarComentario(c.id, c.texto);
 
         const btExcluir = document.createElement('button');
         btExcluir.textContent = 'Excluir';
-        btExcluir.className = 'btn';
-        btExcluir.style.padding = '.35rem .6rem';
+        btExcluir.className   = 'btn';
+        btExcluir.style.padding      = '.35rem .6rem';
         btExcluir.style.borderRadius = '8px';
-        btExcluir.style.border = '1px solid #ddd';
-        btExcluir.onclick = () => excluirComentario(c.id);
+        btExcluir.style.border       = '1px solid #ddd';
+        btExcluir.onclick            = () => excluirComentario(c.id);
 
         acoes.appendChild(btEditar);
         acoes.appendChild(btExcluir);
@@ -220,9 +258,10 @@
       try {
         const resp = await fetch(`${API}/comentarios?pagina=${encodeURIComponent(PAGINA)}`);
         const data = await resp.json();
-        const ul = document.getElementById('lista-comentarios');
+        const ul   = document.getElementById('lista-comentarios');
         ul.innerHTML = '';
-        if (resp.ok && data.ok && data.comentarios.length) {
+
+        if (resp.ok && data.ok && Array.isArray(data.comentarios) && data.comentarios.length) {
           data.comentarios.forEach(c => ul.appendChild(criaItemComentario(c)));
         } else {
           const vazio = document.createElement('li');
@@ -235,6 +274,8 @@
     }
 
     async function enviarComentario(texto) {
+      // Tenta enviar também um "autor" para o backend (se ele aceitar, ótimo; se ignorar, tudo bem)
+      const nomeAutor = usuarioLogado ? primeiroNome(usuarioLogado) : 'Anônimo';
       const resp = await fetch(`${API}/comentarios`, {
         method: 'POST',
         credentials: 'include',
@@ -242,7 +283,7 @@
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + token
         },
-        body: JSON.stringify({ pagina: PAGINA, texto })
+        body: JSON.stringify({ pagina: PAGINA, texto, autor: nomeAutor })
       });
       return resp.json();
     }
@@ -262,11 +303,8 @@
         body: JSON.stringify({ texto: novo.trim() })
       });
       const data = await resp.json();
-      if (resp.ok && data.ok) {
-        carregarComentarios();
-      } else {
-        alert(data.mensagem || 'Erro ao editar.');
-      }
+      if (resp.ok && data.ok) carregarComentarios();
+      else alert(data.mensagem || 'Erro ao editar.');
     }
 
     async function excluirComentario(id) {
@@ -277,28 +315,26 @@
         headers: { 'Authorization': 'Bearer ' + token }
       });
       const data = await resp.json();
-      if (resp.ok && data.ok) {
-        carregarComentarios();
-      } else {
-        alert(data.mensagem || 'Erro ao excluir.');
-      }
+      if (resp.ok && data.ok) carregarComentarios();
+      else alert(data.mensagem || 'Erro ao excluir.');
     }
 
-    // ===== Inicialização (chama atualizarMenuAuth aqui!) =====
+    // Inicialização
     async function iniciarComentarios() {
-      atualizarMenuAuth(); // <- ESTA LINHA faz o botão Sair aparecer quando logado
-
+      atualizarMenuAuth();
       usuarioLogado = await obterPerfil();
+
       if (usuarioLogado) {
-        mostrarForm(true, usuarioLogado.nome_completo);
+        const nomeExibir = primeiroNome(usuarioLogado);
+        mostrarForm(true, nomeExibir);
       } else {
         mostrarForm(false);
       }
+
       carregarComentarios();
 
-      // enviar novo comentário
       const form = document.getElementById('form-comentario');
-      const msg = document.getElementById('msg-coment');
+      const msg  = document.getElementById('msg-coment');
       form?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const texto = document.getElementById('texto').value.trim();
@@ -327,121 +363,5 @@
       iniciarComentarios();
     }
   </script>
-
-    <header>
-        <div class="container">
-            <img src="assets/images/Logo principal k.png" alt="Logo Kalibu Áudio Lab" class="logo">
-            <nav>
-                <ul class="menu">
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="sobre.html">Sobre</a></li>
-                    <li><a href="conteudo.html" class="active">Conteúdo</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
-    <main>
-        <section class="conteudo-intro">
-            <h1>Conteúdo Educacional</h1>
-            <p>Aqui você encontra tutoriais, guias e recursos para aprofundar seu conhecimento sobre produção musical, MIDI e muito mais!</p>
-        </section>
-
-        <section class="guias">
-            <h2>Guias de Produção Musical</h2>
-            <ul>
-                <li><a href="https://youtu.be/2EkvOMlewhs?si=5_GdNqP_WVK5x3Nw">Entenda o que é DAWs.</a></li>
-                <li><a href="https://youtu.be/fG_bdU-gJGM?si=aBVkMJh61htbhD9B">Ferramentas de áudio.</a></li>
-                <li><a href="https://youtu.be/H_yZyEdymfA?si=jD13mtiZ7uzyaMSW">Produção musical.</a></li>
-            </ul>
-        </section>
-
-        <section class="miditutorials">
-            <h2>Tutoriais sobre MIDI</h2>
-            <ul>
-                <li><a href="https://youtu.be/WQKCxIq6pps?si=X_28e10rr5ATUO_2">Entenda o que é MIDI.</a></li>
-                <li><a href="https://youtu.be/lhsCZZJGDMU?si=mxD_72GfFvHHn-iY">Técnicas de produção usando controladores MIDI.</a></li>
-                <li><a href="https://youtu.be/u-CnWIYJT6A?si=DgSd0CdxQncY-tNO">Como integrar MIDI com VSTs e instrumentos virtuais.</a></li>
-            </ul>
-        </section>
-
-        <section class="tecnologiamusical">
-            <h2>Destaques em Tecnologia Musical</h2>
-            <ul>
-                <li><a href="https://youtu.be/fG_bdU-gJGM?si=aBVkMJh61htbhD9B">Novos plugins e softwares para produtores independentes.</a></li>
-                <li><a href="https://www.youtube.com/live/HcQtCgvGFyc?si=2kGXpsLNmlSc4xRl">Análise de novas tendências no universo musical digital.</a></li>
-                <li><a href="https://youtu.be/j0b7x3qtjMI?si=yAm78ApaIj6jsJyr">Como escolher a melhor interface de áudio para o seu estúdio.</a></li>
-            </ul>
-        </section>
-
-        <section class="comentarios">
-            <h2>Deixe seu comentário</h2>
-            <form id="form-comentario">
-                <label for="nome">Nome:</label><br />
-                <input type="text" id="nome" name="nome" required /><br /><br />
-
-                <label for="mensagem">Comentário:</label><br />
-                <textarea id="mensagem" name="mensagem" rows="4" required></textarea><br /><br />
-
-                <button type="submit">Enviar</button>
-            </form>
-
-            <div id="lista-comentarios">
-                <!-- Comentários carregados aqui -->
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2025 Kalibu Áudio Lab | <a href="index.html"><strong>Início</strong></a></p>
-    </footer>
-
-    <script>
-        const API_URL = "http://localhost:3000";
-
-        // Função para carregar comentários
-        async function carregarComentarios() {
-            try {
-                const resposta = await fetch(`${API_URL}/comentarios`);
-                const comentarios = await resposta.json();
-
-                const lista = document.getElementById("lista-comentarios");
-                lista.innerHTML = "";
-
-                comentarios.forEach(c => {
-                    const div = document.createElement("div");
-                    div.innerHTML = `<strong>${c.nome}</strong> (${new Date(c.data_envio).toLocaleString()}): ${c.mensagem}`;
-                    lista.appendChild(div);
-                });
-            } catch (error) {
-                console.error("Erro ao carregar comentários:", error);
-            }
-        }
-
-        // Enviar comentário
-        document.getElementById("form-comentario").addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            const nome = document.getElementById("nome").value;
-            const mensagem = document.getElementById("mensagem").value;
-
-            try {
-                await fetch(`${API_URL}/comentarios`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ nome, mensagem })
-                });
-
-                document.getElementById("form-comentario").reset();
-                carregarComentarios();
-            } catch (error) {
-                console.error("Erro ao enviar comentário:", error);
-            }
-        });
-
-        // Carregar comentários ao abrir a página
-        carregarComentarios();
-    </script>
-main
 </body>
 </html>
