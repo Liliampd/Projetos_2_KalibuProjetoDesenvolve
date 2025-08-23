@@ -98,7 +98,7 @@
   <script>
     const API = 'http://localhost:4000';
 
-    // ===== Menu: Entrar/Cadastro/Sair =====
+    // Os Menus: Entrar/Cadastro/Sair 
     function atualizarMenuAuth() {
       const token = localStorage.getItem('kalibu_token');
       const temToken = !!token;
@@ -124,7 +124,7 @@
     document.getElementById('btn-sair')?.addEventListener('click', sair);
     atualizarMenuAuth();
 
-    // ===== Cadastro com confirmação de senha + olhinho =====
+    // Cadastro com confirmação de senha e olhinho
     const form   = document.getElementById('form-cadastro');
     const msg    = document.getElementById('mensagem');
     const senha  = document.getElementById('senha');
@@ -147,7 +147,7 @@
     ligarOlho('olho-conf',  conf);
 
     function validarSenhas() {
-      // limpa estilos se vazio
+      // limpa estilos 
       if (!senha.value && !conf.value) {
         senha.classList.remove('ok','erro');
         conf.classList.remove('ok','erro');
