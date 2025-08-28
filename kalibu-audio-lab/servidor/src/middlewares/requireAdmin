@@ -1,0 +1,15 @@
+// src/middlewares/requireAdmin.js
+module.exports = function requireAdmin(req, res, next) {
+  if (!req.user) {
+    return res.status(401).json({ ok: false, mensagem: 'Não autenticado.' });
+  }
+  const ehAdmin =
+    req.user.is_admin === true ||
+    req.user.is_admin === 1 ||
+    req.user.is_admin === '1';
+
+  if (!ehAdmin) {
+    return res.status(403).json({ ok: false, mensagem: 'Acesso restrito a administradores.' });
+  }
+  next();
+};

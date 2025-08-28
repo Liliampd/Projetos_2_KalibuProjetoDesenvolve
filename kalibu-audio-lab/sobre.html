@@ -15,6 +15,10 @@
                     <li><a href="index.html">Início</a></li>
                     <li><a href="sobre.html" class="active">Sobre</a></li>
                     <li><a href="conteudo.html">Conteúdo</a></li>
+                    <li id="menu-admin" style="display:none;">
+  <a href="admin.html">Admin</a>
+</li>
+
                 </ul>
             </nav>
         </div>
@@ -50,5 +54,12 @@
     <footer>
         <p>&copy; 2025 Kalibu Áudio Lab | <a href="index.html"><strong>Início</strong></a></p>
     </footer>
+    <script>
+  // se você já usa uma constante API global, pode manter;
+  // se não, essa linha é opcional, pois o script já usa o fallback.
+  window.API = 'http://localhost:4000';
+</script>
+<script src="assets/js/header.js"></script>
+
 </body>
 </html>

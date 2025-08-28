@@ -10,21 +10,33 @@ class Usuario {
     const params = [nome || null, email, senha_hash];
     const [resultado] = await pool.execute(sql, params);
 
+    // por padrão, novo usuário vem com is_admin = 0 no banco
     return {
       id: resultado.insertId,
       nome: nome || null,
       email,
+      is_admin: 0,
     };
   }
 
   static async buscarPorEmail(email) {
-    const sql = 'SELECT id, nome, email, senha_hash FROM usuarios WHERE email = ? LIMIT 1';
+    const sql = `
+      SELECT id, nome, email, senha_hash, is_admin
+      FROM usuarios
+      WHERE email = ?
+      LIMIT 1
+    `;
     const [linhas] = await pool.execute(sql, [email]);
     return linhas[0] || null;
   }
 
   static async buscarPorId(id) {
-    const sql = 'SELECT id, nome, email, senha_hash FROM usuarios WHERE id = ? LIMIT 1';
+    const sql = `
+      SELECT id, nome, email, senha_hash, is_admin
+      FROM usuarios
+      WHERE id = ?
+      LIMIT 1
+    `;
     const [linhas] = await pool.execute(sql, [id]);
     return linhas[0] || null;
   }

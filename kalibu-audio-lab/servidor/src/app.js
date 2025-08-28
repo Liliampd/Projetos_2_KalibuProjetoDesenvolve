@@ -1,4 +1,4 @@
-// src/app.js
+// servidor/src/app.js
 require('dotenv').config();
 
 const express = require('express');
@@ -8,23 +8,30 @@ const cookieParser = require('cookie-parser');
 const rotas = require('./rotas');
 const rotasUsuarios = require('./rotas_usuarios');
 const rotasComentarios = require('./rotas_comentarios');
+const rotasAdmin = require('./rotas_admin');            // <- rotas de admin
+
+const requireJWT = require('./middlewares/jwt.middleware'); // <- seu middleware de login
+const requireAdmin = require('./middlewares/requireAdmin'); // <- verifica is_admin
 
 const { testarConexao } = require('./banco');
 
 const app = express();
 const PORTA = Number(process.env.PORTA || 4000);
 
-// CORS (ajuste a origin depois, se quiser restringir)
+// CORS + parsers
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// Rotas
+// Rotas públicas/normais
 app.use('/', rotas);
 app.use('/auth', rotasUsuarios);
 app.use('/', rotasComentarios);
 
-// Rota para testar conexão com o banco
+// Rotas SOMENTE para admin (cadeia de middlewares: precisa estar logada + ser admin)
+app.use('/admin', requireJWT, requireAdmin, rotasAdmin);
+
+// Rota utilitária para checar o banco
 app.get('/teste-banco', async (req, res) => {
   try {
     const ok = await testarConexao();
@@ -34,12 +41,11 @@ app.get('/teste-banco', async (req, res) => {
   }
 });
 
-// Só sobe o servidor quando NÃO estiver em testes
+// Sobe o servidor se não estiver em modo de teste
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORTA, () => {
     console.log(`✅ Servidor ouvindo em http://localhost:${PORTA}`);
   });
 }
 
-// Exporta o app para os testes (supertest) importarem
 module.exports = app;

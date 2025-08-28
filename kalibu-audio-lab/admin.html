@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel Administrativo - Kalibu Áudio Lab</title>
+  <link rel="stylesheet" href="assets/css/style.css"/>
+  <style>
+    .container { max-width: 1000px; margin: 0 auto; padding: 16px; }
+    .card { background:#fff; border-radius:10px; padding:16px; margin:16px 0; }
+    .row-actions { display:flex; gap:8px; }
+    .btn { padding:6px 10px; border-radius:6px; border:1px solid #ccc; cursor:pointer; background:#f6f6f6; }
+    .btn.primary { background:#0b74ff; color:#fff; border-color:#0b74ff; }
+    .btn.danger { background:#d9534f; color:#fff; border-color:#d9534f; }
+    .muted { color:#777; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { border-bottom:1px solid #eee; padding:8px; text-align:left; vertical-align: top; }
+    th { background:#fafafa; }
+    .msg { margin:12px 0; padding:10px; border-radius:6px; }
+    .msg.ok { background:#e7f6ed; color:#1e7e34; }
+    .msg.err{ background:#fdecea; color:#a71d2a; }
+    .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; background:#eee; }
+    .badge.green{ background:#e6f4ea; color:#137333; border:1px solid #cce7d6; }
+    .badge.gray { background:#f1f3f4; color:#5f6368; border:1px solid #e0e0e0; }
+  </style>
+</head>
+<body>
+  <!-- topo igual às outras páginas -->
+  <header>
+    <div class="container">
+      <img src="assets/images/Logo principal k.png" class="logo" alt="Logo Kalibu Áudio Lab"/>
+      <nav>
+        <ul class="menu">
+          <li><a href="index.html">Início</a></li>
+          <li><a href="sobre.html">Sobre</a></li>
+          <li><a href="conteudo.html">Conteúdo</a></li>
+          <li style="float:right"><a id="btn-sair" href="#">Sair</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="msg" class="msg" style="display:none;"></div>
+
+    <div class="card">
+      <h2>Painel Administrativo</h2>
+      <p class="muted">
+        Bem-vindo(a), <span id="nome-usuario">-</span> —
+        <span id="status-admin" class="badge gray">verificando…</span>
+      </p>
+    </div>
+
+    <div id="bloco-admin" style="display:none;">
+      <div class="card">
+        <h3>Usuários</h3>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:60px;">ID</th>
+              <th>Nome</th>
+              <th>Email</th>
+              <th style="width:110px;">Admin?</th>
+              <th style="width:220px;">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbl-usuarios">
+            <tr><td colspan="5" class="muted">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>Comentários</h3>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:60px;">ID</th>
+              <th>Página</th>
+              <th>Autor</th>
+              <th>Texto</th>
+              <th style="width:160px;">Criado em</th>
+              <th style="width:120px;">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbl-comentarios">
+            <tr><td colspan="6" class="muted">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script>
+  (function(){
+    const API = 'http://localhost:4000';
+    const token = localStorage.getItem('kalibu_token');
+    const elMsg = document.getElementById('msg');
+    const elNome = document.getElementById('nome-usuario');
+    const elStatus = document.getElementById('status-admin');
+    const blocoAdmin = document.getElementById('bloco-admin');
+    const tblUsuarios = document.getElementById('tbl-usuarios');
+    const tblComentarios = document.getElementById('tbl-comentarios');
+    const btnSair = document.getElementById('btn-sair');
+
+    // util
+    function showMsg(texto, tipo='ok') {
+      elMsg.textContent = texto;
+      elMsg.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
+      elMsg.style.display = 'block';
+      setTimeout(()=> elMsg.style.display='none', 4000);
+    }
+    function parseToken(t){
+      try { return JSON.parse(atob(String(t).split('.')[1])); } catch { return null; }
+    }
+    async function api(path, opts = {}){
+      const resp = await fetch(API + path, {
+        ...opts,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(opts.headers||{}),
+          Authorization: 'Bearer ' + token
+        },
+        credentials: 'include'
+      });
+      let data;
+      try { data = await resp.json(); } catch { data = { ok:false, mensagem:'Resposta inválida' }; }
+      if (!resp.ok || data.ok === false) {
+        throw new Error(data.mensagem || ('HTTP ' + resp.status));
+      }
+      return data;
+    }
+
+    // ---- verificação inicial
+    async function init(){
+      if (!token) {
+        elStatus.textContent = 'sem login';
+        elStatus.className = 'badge gray';
+        showMsg('Faça login para acessar o painel.', 'err');
+        return;
+      }
+
+      // mostra nome (quando o JWT já tem nome/email/id)
+      const payload = parseToken(token);
+      if (payload?.email) elNome.textContent = payload.email;
+
+      try {
+        const saude = await api('/admin/health');
+        // saude: { ok:true, usuario:{ id, email, is_admin } }
+        const souAdmin = !!saude.usuario?.is_admin;
+        elStatus.textContent = souAdmin ? 'ADMIN' : 'sem permissão';
+        elStatus.className = 'badge ' + (souAdmin ? 'green' : 'gray');
+
+        if (!souAdmin) {
+          showMsg('Acesso restrito a administradores.', 'err');
+          return;
+        }
+
+        blocoAdmin.style.display = 'block';
+        await Promise.all([carregarUsuarios(), carregarComentarios()]);
+      } catch (e) {
+        elStatus.textContent = 'erro';
+        elStatus.className = 'badge gray';
+        showMsg(e.message || 'Falha ao verificar acesso.', 'err');
+      }
+    }
+
+    // ---- usuários
+    async function carregarUsuarios(){
+      tblUsuarios.innerHTML = '<tr><td colspan="5" class="muted">Carregando…</td></tr>';
+      try {
+        const data = await api('/admin/usuarios');
+        const linhas = [];
+        if (!data.usuarios?.length) {
+          tblUsuarios.innerHTML = '<tr><td colspan="5" class="muted">Nenhum usuário.</td></tr>';
+          return;
+        }
+        for (const u of data.usuarios){
+          const admin = u.is_admin ? 'Sim' : 'Não';
+          linhas.push(`
+            <tr data-id="${u.id}" data-admin="${u.is_admin ? 1 : 0}">
+              <td>${u.id}</td>
+              <td>${u.nome || '-'}</td>
+              <td>${u.email}</td>
+              <td>${admin}</td>
+              <td class="row-actions">
+                <button class="btn primary" data-acao="toggle-admin">
+                  ${u.is_admin ? 'Remover admin' : 'Tornar admin'}
+                </button>
+                <button class="btn danger" data-acao="del-user">Excluir</button>
+              </td>
+            </tr>
+          `);
+        }
+        tblUsuarios.innerHTML = linhas.join('');
+      } catch (e) {
+        tblUsuarios.innerHTML = `<tr><td colspan="5" class="muted">Erro: ${e.message}</td></tr>`;
+      }
+    }
+
+    tblUsuarios.addEventListener('click', async (ev)=>{
+      const btn = ev.target.closest('button');
+      if (!btn) return;
+      const tr = btn.closest('tr');
+      const id = Number(tr?.dataset.id);
+      if (!id) return;
+
+      try {
+        if (btn.dataset.acao === 'toggle-admin') {
+          const atual = tr.dataset.admin === '1';
+          const novo = !atual;
+          await api(`/admin/usuarios/${id}/admin`, {
+            method: 'PATCH',
+            body: JSON.stringify({ is_admin: novo })
+          });
+          showMsg(novo ? 'Usuário promovido a admin.' : 'Permissão de admin removida.');
+          await carregarUsuarios();
+        }
+        else if (btn.dataset.acao === 'del-user') {
+          if (!confirm(`Excluir o usuário #${id}?`)) return;
+          await api(`/admin/usuarios/${id}`, { method:'DELETE' });
+          showMsg('Usuário excluído.');
+          await Promise.all([carregarUsuarios(), carregarComentarios()]);
+        }
+      } catch (e) {
+        showMsg(e.message, 'err');
+      }
+    });
+
+    // ---- comentários
+    async function carregarComentarios(){
+      tblComentarios.innerHTML = '<tr><td colspan="6" class="muted">Carregando…</td></tr>';
+      try {
+        const data = await api('/admin/comentarios');
+        const linhas = [];
+        if (!data.comentarios?.length) {
+          tblComentarios.innerHTML = '<tr><td colspan="6" class="muted">Nenhum comentário.</td></tr>';
+          return;
+        }
+        for (const c of data.comentarios){
+          const autor = (c.autor && (c.autor.nome || c.autor.email)) || `#${c.autor_id || 'anônimo'}`;
+          const criado = c.criado_em ? new Date(c.criado_em).toLocaleString('pt-BR') : '-';
+          linhas.push(`
+            <tr data-id="${c.id}">
+              <td>${c.id}</td>
+              <td>${c.pagina}</td>
+              <td>${autor}</td>
+              <td>${(c.texto || '').replace(/</g,'&lt;')}</td>
+              <td>${criado}</td>
+              <td class="row-actions">
+                <button class="btn danger" data-acao="delc">Excluir</button>
+              </td>
+            </tr>
+          `);
+        }
+        tblComentarios.innerHTML = linhas.join('');
+      } catch (e) {
+        tblComentarios.innerHTML = `<tr><td colspan="6" class="muted">Erro: ${e.message}</td></tr>`;
+      }
+    }
+
+    tblComentarios.addEventListener('click', async (ev)=>{
+      const btn = ev.target.closest('button');
+      if (!btn) return;
+      const tr = btn.closest('tr');
+      const id = Number(tr?.dataset.id);
+      if (!id) return;
+
+      if (btn.dataset.acao === 'delc') {
+        try {
+          if (!confirm(`Excluir o comentário #${id}?`)) return;
+          await api(`/admin/comentarios/${id}`, { method:'DELETE' });
+          showMsg('Comentário excluído.');
+          await carregarComentarios();
+        } catch (e) {
+          showMsg(e.message, 'err');
+        }
+      }
+    });
+
+    // ---- sair
+    btnSair.addEventListener('click', async (ev)=>{
+      ev.preventDefault();
+      try { await fetch(API + '/auth/sair', { method:'POST', credentials:'include' }); } catch {}
+      localStorage.removeItem('kalibu_token');
+      showMsg('Sessão encerrada.');
+      setTimeout(()=> window.location.href = 'index.html', 500);
+    });
+
+    // start
+    init();
+  })();
+  </script>
+</body>
+</html>

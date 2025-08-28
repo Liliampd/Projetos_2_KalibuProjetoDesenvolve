@@ -7,8 +7,18 @@ const JWT_SEGREDO = process.env.JWT_SEGREDO || 'segredo_dev';
 const JWT_EXPIRA  = process.env.JWT_EXPIRA  || '2d';
 
 function criarToken(payload) {
-  return jwt.sign(payload, JWT_SEGREDO, { expiresIn: JWT_EXPIRA });
+  const tokenPayload = {
+    id: payload.id,
+    email: payload.email,
+    is_admin:
+      payload.is_admin === true ||
+      payload.is_admin === 1 ||
+      payload.is_admin === '1'
+  };
+
+  return jwt.sign(tokenPayload, JWT_SEGREDO, { expiresIn: JWT_EXPIRA });
 }
+
 
 function gravarCookieToken(res, token) {
   const isProd = process.env.NODE_ENV === 'production';

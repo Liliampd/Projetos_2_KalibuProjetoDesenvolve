@@ -7,8 +7,19 @@ const JWT_SEGREDO = process.env.JWT_SEGREDO || 'dev_secret';
 const JWT_EXPIRA = process.env.JWT_EXPIRA || '2d';
 
 function gerarToken(payload) {
-  return jwt.sign(payload, JWT_SEGREDO, { expiresIn: JWT_EXPIRA });
+  // força o campo is_admin a existir e virar booleano
+  const tokenPayload = {
+    id: payload.id,
+    email: payload.email,
+    is_admin:
+      payload.is_admin === true ||
+      payload.is_admin === 1 ||
+      payload.is_admin === '1'
+  };
+
+  return jwt.sign(tokenPayload, JWT_SEGREDO, { expiresIn: JWT_EXPIRA });
 }
+
 
 // POST /auth/registrar
 async function registrar(req, res) {
@@ -29,7 +40,11 @@ async function registrar(req, res) {
     // cria usuário
     const usuario = await Usuario.criar({ nome, email, senha_hash });
 
-    const token = gerarToken({ id: usuario.id, email: usuario.email });
+const token = gerarToken({
+  id: usuario.id,
+  email: usuario.email,
+  is_admin: usuario.is_admin   // <- incluir no payload
+});
 
     // devolve apenas campos seguros
     return res.status(201).json({
@@ -60,8 +75,12 @@ async function entrar(req, res) {
     if (!confere) {
       return res.status(401).json({ ok: false, mensagem: 'Credenciais inválidas' });
     }
+const token = gerarToken({
+  id: usuario.id,
+  email: usuario.email,
+  is_admin: usuario.is_admin   // <- incluir no payload
+});
 
-    const token = gerarToken({ id: usuario.id, email: usuario.email });
     return res.json({ ok: true, token });
   } catch (e) {
     console.error(e);
@@ -72,14 +91,16 @@ async function entrar(req, res) {
 // GET /auth/perfil  (requer middleware que popula req.usuario)
 async function perfil(req, res) {
   try {
-    if (!req.usuario) {
-      return res.status(401).json({ ok: false, mensagem: 'Não autorizado' });
+    const u = req.user || req.usuario;
+    if (!u || !u.id) {
+      return res.status(401).json({ ok: false, mensagem: 'Não autenticado' });
     }
-    return res.json({ ok: true, usuario: req.usuario });
+    return res.json({ ok: true, usuario: u });
   } catch (e) {
     console.error(e);
     return res.status(500).json({ ok: false, mensagem: e.message });
   }
 }
+
 
 module.exports = { registrar, entrar, perfil };
