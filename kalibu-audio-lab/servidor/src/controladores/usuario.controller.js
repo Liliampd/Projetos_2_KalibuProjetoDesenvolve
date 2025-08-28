@@ -1,4 +1,3 @@
-// src/controladores/usuario.controller.js
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const UsuarioModel = require('../modelos/usuario.model');

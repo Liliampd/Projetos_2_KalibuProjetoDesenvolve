@@ -25,7 +25,6 @@
   </style>
 </head>
 <body>
-  <!-- topo igual às outras páginas -->
   <header>
     <div class="container">
       <img src="assets/images/Logo principal k.png" class="logo" alt="Logo Kalibu Áudio Lab"/>
@@ -103,7 +102,6 @@
     const tblComentarios = document.getElementById('tbl-comentarios');
     const btnSair = document.getElementById('btn-sair');
 
-    // util
     function showMsg(texto, tipo='ok') {
       elMsg.textContent = texto;
       elMsg.className = 'msg ' + (tipo === 'ok' ? 'ok' : 'err');
@@ -140,13 +138,11 @@
         return;
       }
 
-      // mostra nome (quando o JWT já tem nome/email/id)
       const payload = parseToken(token);
       if (payload?.email) elNome.textContent = payload.email;
 
       try {
         const saude = await api('/admin/health');
-        // saude: { ok:true, usuario:{ id, email, is_admin } }
         const souAdmin = !!saude.usuario?.is_admin;
         elStatus.textContent = souAdmin ? 'ADMIN' : 'sem permissão';
         elStatus.className = 'badge ' + (souAdmin ? 'green' : 'gray');
@@ -165,7 +161,6 @@
       }
     }
 
-    // ---- usuários
     async function carregarUsuarios(){
       tblUsuarios.innerHTML = '<tr><td colspan="5" class="muted">Carregando…</td></tr>';
       try {
@@ -227,7 +222,6 @@
       }
     });
 
-    // ---- comentários
     async function carregarComentarios(){
       tblComentarios.innerHTML = '<tr><td colspan="6" class="muted">Carregando…</td></tr>';
       try {
@@ -278,7 +272,6 @@
       }
     });
 
-    // ---- sair
     btnSair.addEventListener('click', async (ev)=>{
       ev.preventDefault();
       try { await fetch(API + '/auth/sair', { method:'POST', credentials:'include' }); } catch {}
@@ -287,7 +280,6 @@
       setTimeout(()=> window.location.href = 'index.html', 500);
     });
 
-    // start
     init();
   })();
   </script>

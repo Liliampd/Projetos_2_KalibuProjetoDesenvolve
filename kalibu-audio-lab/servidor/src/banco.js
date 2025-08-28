@@ -1,4 +1,3 @@
-// src/banco.js
 const mysql = require('mysql2/promise');
 const dotenv = require('dotenv');
 
@@ -25,15 +24,14 @@ const pool = mysql.createPool({
 
 let poolClosed = false;
 
-// >>> Mantém compatível com mysql2: retorna [rows, fields]
 async function query(sql, params) {
   if (poolClosed) throw new Error('Pool is closed');
-  return pool.query(sql, params);      // [rows, fields]
+  return pool.query(sql, params);      
 }
 
 async function execute(sql, params) {
   if (poolClosed) throw new Error('Pool is closed');
-  return pool.execute(sql, params);    // [rows, fields]
+  return pool.execute(sql, params);    
 }
 
 function getPool() {
@@ -47,7 +45,6 @@ async function endPool() {
   }
 }
 
-// Auto-teste de conexão: roda só fora de testes
 if (process.env.NODE_ENV !== 'test') {
   (async () => {
     try {

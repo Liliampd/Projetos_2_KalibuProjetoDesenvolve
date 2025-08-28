@@ -11,7 +11,6 @@
     .grupo label{display:block;margin-bottom:.3rem;font-weight:600}
     .grupo input{width:100%;padding:.7rem .8rem;border-radius:10px;border:1px solid #ddd;outline:none}
 
-    /* Olhinho dentro do input */
     .input-wrap{position:relative}
     .toggle-olho{
       position:absolute; right:10px; top:50%; transform:translateY(-50%);
@@ -39,7 +38,6 @@
           <li><a href="sobre.html">Sobre</a></li>
           <li><a href="conteudo.html">Conteúdo</a></li>
 
-          <!-- links de autenticação -->
           <li><a href="cadastro.html" id="link-cadastro">Cadastro</a></li>
           <li><a href="login.html" id="link-entrar" class="active">Entrar</a></li>
           <li>
@@ -78,7 +76,6 @@
   <script>
     const API = 'http://localhost:4000';
 
-    // ===== Menu: Entrar/Cadastro/Sair =====
     function atualizarMenuAuth() {
       const token = localStorage.getItem('kalibu_token');
       const temToken = !!token;
@@ -104,7 +101,6 @@
     document.getElementById('btn-sair')?.addEventListener('click', sair);
     atualizarMenuAuth();
 
-    // ===== Olhinho da senha =====
     const senhaInput = document.getElementById('senha');
     const olhoBtn    = document.getElementById('olho-senha');
     olhoBtn.addEventListener('click', () => {
@@ -115,7 +111,6 @@
       olhoBtn.textContent = visivel ? '👁' : '🙈';
     });
 
-    // ===== Login =====
     const form = document.getElementById('form-login');
     const msg  = document.getElementById('mensagem');
 

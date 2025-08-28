@@ -1,4 +1,3 @@
-// src/tests/auth.test.js
 const request = require('supertest');
 const app = require('../app');
 
@@ -13,7 +12,6 @@ describe('Auth: registrar, entrar, perfil', () => {
       .post('/auth/registrar')
       .send({ nome_completo: nome, email, senha });
 
-    // aceita 200 ou 201, dependendo do seu controller
     expect([200, 201]).toContain(res.statusCode);
     expect(res.body).toHaveProperty('ok', true);
     expect(res.body).toHaveProperty('usuario');

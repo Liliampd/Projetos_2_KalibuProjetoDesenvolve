@@ -1,4 +1,3 @@
-// src/controladores/auth.controller.js
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Usuario = require('../modelos/usuario.model');
@@ -7,7 +6,6 @@ const JWT_SEGREDO = process.env.JWT_SEGREDO || 'dev_secret';
 const JWT_EXPIRA = process.env.JWT_EXPIRA || '2d';
 
 function gerarToken(payload) {
-  // força o campo is_admin a existir e virar booleano
   const tokenPayload = {
     id: payload.id,
     email: payload.email,
@@ -21,7 +19,6 @@ function gerarToken(payload) {
 }
 
 
-// POST /auth/registrar
 async function registrar(req, res) {
   try {
     const { email = '', senha = '', nome: nomeRaw } = req.body || {};
@@ -30,23 +27,20 @@ async function registrar(req, res) {
       return res.status(400).json({ ok: false, mensagem: 'email e senha são obrigatórios' });
     }
 
-    // nome padrão quando não for enviado
     const nome =
       (typeof nomeRaw === 'string' && nomeRaw.trim()) ||
       (email.includes('@') ? email.split('@')[0] : 'Usuário');
 
     const senha_hash = await bcrypt.hash(String(senha), 10);
 
-    // cria usuário
     const usuario = await Usuario.criar({ nome, email, senha_hash });
 
 const token = gerarToken({
   id: usuario.id,
   email: usuario.email,
-  is_admin: usuario.is_admin   // <- incluir no payload
+  is_admin: usuario.is_admin   
 });
 
-    // devolve apenas campos seguros
     return res.status(201).json({
       ok: true,
       usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email },
@@ -58,7 +52,6 @@ const token = gerarToken({
   }
 }
 
-// POST /auth/entrar
 async function entrar(req, res) {
   try {
     const { email = '', senha = '' } = req.body || {};
@@ -78,7 +71,7 @@ async function entrar(req, res) {
 const token = gerarToken({
   id: usuario.id,
   email: usuario.email,
-  is_admin: usuario.is_admin   // <- incluir no payload
+  is_admin: usuario.is_admin   
 });
 
     return res.json({ ok: true, token });
@@ -88,7 +81,6 @@ const token = gerarToken({
   }
 }
 
-// GET /auth/perfil  (requer middleware que popula req.usuario)
 async function perfil(req, res) {
   try {
     const u = req.user || req.usuario;

@@ -1,11 +1,7 @@
-// servidor/src/rotas_admin.js
 const express = require('express');
 const router = express.Router();
 const pool = require('./banco'); // usa o pool do mysql2/promise
 
-// ------------------------------------------------------------------
-// 0) Health (já funciona, mas mantemos aqui)
-// ------------------------------------------------------------------
 router.get('/health', (req, res) => {
   const u = req.user || req.usuario || null;
   return res.json({
@@ -14,11 +10,7 @@ router.get('/health', (req, res) => {
   });
 });
 
-// ------------------------------------------------------------------
-// 1) Comentários
-// ------------------------------------------------------------------
 
-// GET /admin/comentarios  -> lista últimos comentários
 router.get('/comentarios', async (req, res) => {
   try {
     const { pagina = '' } = req.query;
@@ -50,7 +42,6 @@ router.get('/comentarios', async (req, res) => {
   }
 });
 
-// DELETE /admin/comentarios/:id -> apaga um comentário
 router.delete('/comentarios/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
@@ -67,11 +58,7 @@ router.delete('/comentarios/:id', async (req, res) => {
   }
 });
 
-// ------------------------------------------------------------------
-// 2) Usuários
-// ------------------------------------------------------------------
 
-// GET /admin/usuarios -> lista usuários
 router.get('/usuarios', async (_req, res) => {
   try {
     const sql = `
@@ -88,13 +75,11 @@ router.get('/usuarios', async (_req, res) => {
   }
 });
 
-// PATCH /admin/usuarios/:id/admin  -> liga/desliga admin
 router.patch('/usuarios/:id/admin', async (req, res) => {
   try {
     const id = Number(req.params.id);
     let { is_admin } = req.body || {};
 
-    // normaliza boolean (aceita true/false, 1/0, "1"/"0")
     is_admin = (is_admin === true || is_admin === 1 || is_admin === '1') ? 1 : 0;
 
     if (!id) return res.status(400).json({ ok: false, mensagem: 'id inválido' });
@@ -110,13 +95,11 @@ router.patch('/usuarios/:id/admin', async (req, res) => {
   }
 });
 
-// DELETE /admin/usuarios/:id  -> apaga usuário (comentários caem por ON DELETE CASCADE)
 router.delete('/usuarios/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
     if (!id) return res.status(400).json({ ok: false, mensagem: 'id inválido' });
 
-    // Dica: impedir que a própria admin se apague, se quiser
     const me = req.user || req.usuario || null;
     if (me && Number(me.id) === id) {
       return res.status(400).json({ ok: false, mensagem: 'Você não pode excluir a si mesma.' });

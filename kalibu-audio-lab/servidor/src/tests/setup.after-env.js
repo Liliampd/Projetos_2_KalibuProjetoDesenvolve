@@ -1,4 +1,3 @@
-// Fecha conexões abertas do MySQL após TODOS os testes
 const db = require('../banco');
 
 afterAll(async () => {
@@ -9,6 +8,5 @@ afterAll(async () => {
       await db.end();
     }
   } catch (err) {
-    // evita que um erro de shutdown quebre o Jest
   }
 });

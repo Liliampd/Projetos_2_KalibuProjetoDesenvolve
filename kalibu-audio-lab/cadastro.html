@@ -16,7 +16,6 @@
     .hint.ok{color:#0a7d2f}
     .hint.erro{color:#a81010}
 
-    /* Olhinho dentro do input */
     .input-wrap{position:relative}
     .toggle-olho{
       position:absolute; right:10px; top:50%; transform:translateY(-50%);
@@ -44,7 +43,6 @@
           <li><a href="sobre.html">Sobre</a></li>
           <li><a href="conteudo.html">Conteúdo</a></li>
 
-          <!-- links de autenticação -->
           <li><a href="cadastro.html" id="link-cadastro" class="active">Cadastro</a></li>
           <li><a href="login.html" id="link-entrar">Entrar</a></li>
           <li>
@@ -98,7 +96,6 @@
   <script>
     const API = 'http://localhost:4000';
 
-    // Os Menus: Entrar/Cadastro/Sair 
     function atualizarMenuAuth() {
       const token = localStorage.getItem('kalibu_token');
       const temToken = !!token;
@@ -124,14 +121,12 @@
     document.getElementById('btn-sair')?.addEventListener('click', sair);
     atualizarMenuAuth();
 
-    // Cadastro com confirmação de senha e olhinho
     const form   = document.getElementById('form-cadastro');
     const msg    = document.getElementById('mensagem');
     const senha  = document.getElementById('senha');
     const conf   = document.getElementById('confirmar');
     const hint   = document.getElementById('hintConfirmacao');
 
-    // Olhinho: alterna tipo password/text
     function ligarOlho(btnId, inputEl){
       const btn = document.getElementById(btnId);
       if (!btn) return;
@@ -183,7 +178,6 @@
     conf .addEventListener('input', validarSenhas);
 
     form.addEventListener('reset', () => {
-      // volta inputs para "password" e ícones para estado inicial
       senha.type = 'password'; conf.type = 'password';
       document.getElementById('olho-senha').textContent = '👁';
       document.getElementById('olho-senha').setAttribute('aria-pressed','false');

@@ -64,11 +64,9 @@
       </ul>
     </section>
 
-    <!-- ====== Comentários ====== -->
     <section class="container" style="max-width: 820px; margin: 2rem auto;">
       <h2>Comentários</h2>
 
-      <!-- Aviso quando não estiver logado -->
       <div id="aviso-login"
            style="display:none;margin:.8rem 0;padding:.8rem;background:#fff3cd;border:1px solid #ffe69c;border-radius:10px;">
         Você precisa estar logado para comentar.
@@ -76,7 +74,6 @@
         <a href="login.html" class="button" style="margin-left:.4rem;">Entrar</a>
       </div>
 
-      <!-- Formulário quando logado -->
       <div id="area-form" style="display:none;">
         <p style="margin:.2rem 0 .6rem 0;">Bem-vindo(a), <strong id="boas-vindas">usuário</strong>!</p>
         <p style="margin:.2rem 0 .6rem 0;">Logado como: <strong id="nome-usuario"></strong></p>
@@ -96,7 +93,6 @@
         </form>
       </div>
 
-      <!-- Lista de comentários -->
       <ul id="lista-comentarios" style="list-style:none;padding:0;margin-top:1.2rem;"></ul>
     </section>
   </main>
@@ -106,13 +102,11 @@
   </footer>
 
   <script>
-    // ===== Config =====
     const API = 'http://localhost:4000';
     const PAGINA = 'conteudo';
     let token = localStorage.getItem('kalibu_token');
     let usuarioLogado = null;
 
-    // Util: melhor nome para exibir
     function primeiroNome(u) {
       if (!u) return 'usuário';
       if (u.nome && u.nome.trim()) return u.nome.trim().split(' ')[0];
@@ -121,7 +115,6 @@
       return 'usuário';
     }
 
-    // Nome do autor a partir do objeto de comentário
     function nomeDoComentario(c) {
       const candidatos = [
         c.autor, c.nome, c.nome_autor, c.autor_nome, c.usuario_nome, c.user_nome,
@@ -130,21 +123,18 @@
       for (const n of candidatos) {
         if (typeof n === 'string' && n.trim()) return n.trim();
       }
-      // tenta a partir de e-mail, se existir
       if (typeof c.autor_email === 'string' && c.autor_email.includes('@')) {
         return c.autor_email.split('@')[0];
       }
       if (typeof c.email === 'string' && c.email.includes('@')) {
         return c.email.split('@')[0];
       }
-      // se o comentário é do usuário atual e o backend não mandou nome
       if (usuarioLogado && Number(c.autor_id) === Number(usuarioLogado.id)) {
         return primeiroNome(usuarioLogado);
       }
       return 'Anônimo';
     }
 
-    // Menu de autenticação (Cadastro sempre visível)
     function atualizarMenuAuth() {
       token = localStorage.getItem('kalibu_token');
       const btnSair    = document.getElementById('btn-sair');
@@ -164,7 +154,6 @@
     }
     document.getElementById('btn-sair')?.addEventListener('click', sair);
 
-    // Perfil
     async function obterPerfil() {
       if (!token) return null;
       try {
@@ -202,7 +191,6 @@
       }
     }
 
-    // Render
     function criaItemComentario(c) {
       const li = document.createElement('li');
       li.style.marginBottom = '12px';
@@ -278,7 +266,6 @@
     }
 
     async function enviarComentario(texto) {
-      // Tenta enviar também um "autor" para o backend (se ele aceitar, ótimo; se ignorar, tudo bem)
       const nomeAutor = usuarioLogado ? primeiroNome(usuarioLogado) : 'Anônimo';
       const resp = await fetch(`${API}/comentarios`, {
         method: 'POST',
@@ -323,7 +310,6 @@
       else alert(data.mensagem || 'Erro ao excluir.');
     }
 
-    // Inicialização
     async function iniciarComentarios() {
       atualizarMenuAuth();
       usuarioLogado = await obterPerfil();
@@ -368,8 +354,6 @@
     }
   </script>
   <script>
-  // se você já usa uma constante API global, pode manter;
-  // se não, essa linha é opcional, pois o script já usa o fallback.
   window.API = 'http://localhost:4000';
 </script>
 <script src="assets/js/header.js"></script>

@@ -7,7 +7,6 @@ const requireJWT = require('./middlewares/jwt.middleware');
 router.post('/registrar', registrar);
 router.post('/entrar', entrar);
 
-// precisa estar autenticado para ver o perfil
 router.get('/perfil', requireJWT, perfil);
 
 module.exports = router;

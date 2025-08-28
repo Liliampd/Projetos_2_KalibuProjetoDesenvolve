@@ -1,13 +1,11 @@
-// servidor/src/tests/comentarios.test.js
 const request = require('supertest');
 const app = require('../app');
 const { encerrarPool } = require('../banco');
 
-const PAGINA = 'conteudo'; // mesma página que você usa no front
+const PAGINA = 'conteudo'; 
 
-// helper para logar a resposta quando algo der errado
+
 function dump(label, res) {
-  // mostra status, body (json) e texto cru, para qualquer caso
   console.log(
     `\n----- ${label} -----\nSTATUS:`,
     res.statusCode,
@@ -28,7 +26,6 @@ describe('Comentários: CRUD com auth', () => {
   const nome = 'Usuário Jest';
 
   beforeAll(async () => {
-    // registra e já pega o token
     const res = await request(app)
       .post('/auth/registrar')
       .send({ nome_completo: nome, email, senha });
@@ -53,7 +50,7 @@ describe('Comentários: CRUD com auth', () => {
 
     if (![200, 201].includes(res.statusCode)) dump('POST /comentarios', res);
 
-    expect([200, 201]).toContain(res.statusCode); // aceita 200 ou 201
+    expect([200, 201]).toContain(res.statusCode); 
     expect(res.body).toHaveProperty('ok', true);
     expect(res.body).toHaveProperty('comentario');
 
