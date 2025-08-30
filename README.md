@@ -110,7 +110,7 @@ Na pasta `kalibu-audio-lab/servidor`:
    ```
    DB_HOST=localhost
    DB_USER=seu_usuario
-   DB_PASSWORD=sua_senha
+   DB_PASSWORD= Colocar a minha senha se eu tiver
    DB_NAME=kalibu_lab
    DB_PORT=3306
 
